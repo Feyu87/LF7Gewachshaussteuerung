@@ -11,8 +11,6 @@ from adafruit_ht16k33.segments import Seg7x4
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.cleanup()
-#setzen der Startzeit in der Variable Startzeit
-starttime = time.time()
 #aufbau einer while schleife zum wiederholten Messdurchfuehrung
 while True:
 	#auslesen des Senosors DHT11 des pins 4 mit der Methode dht11. Daten werden in der Variable
@@ -36,4 +34,4 @@ while True:
 	#setzen eines breaks für 15 Sekunden, indem die aktuelle Zeit mit der festgehaltenen Startzeit subtrahiert wird.
 	# ist der Wert 15.0 erreicht, so wird wieder zum schleifenanfang gesprungen und der Durchlauf beginnt solange endlos, bis das Programm
 	# abgebrochen wird
-	time.sleep(15.0) - ((time.time() - starttime) % 15.0)
+	time.sleep(15.0)
