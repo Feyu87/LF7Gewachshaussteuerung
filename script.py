@@ -19,15 +19,9 @@ while True:
 	#die Werte der Variablen instance werden mit der Methode read() ausgelesen und in der Variablen
 	#result gespeichert
 	result = instance.read()
-	#Konsolenausgabe einer Leerzeile
-	print('			')
-	# Konsolenausgabe eines String Wertes 'Neue Messung'
-	print('Neue Messung')
-	# Konsolenausgabe einer Leerzeile
-	print('			')
 	# Konsolenausgabe mit dem String Temperatur und des Platzhaltes mit der einstelligen Dezimalausgabe formatiert
 	# angehängt die Variable result mit der Methode temperature
-	print('Temperature: %-3.1f C*' % result.temperature)
+	print('Temperatur: %-3.1f C*' % result.temperature)
 	# Konsolenausgabe mit dem String Feuchtigkeit und des Platzhaltes mit der einstelligen Dezimalausgabe formatiert
 	# angehängt die Variable result mit der Methode humidity
 	print("Feuchtigkeit: %-3.1f %%" % result.humidity)

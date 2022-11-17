@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bcf44548-002f-42b3-b771-c1d07fcfb728" name="Changes" comment="">
+    <list default="true" id="bcf44548-002f-42b3-b771-c1d07fcfb728" name="Changes" comment="added pdf Blockschaltplan.pdf">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +32,11 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Sebastians\PycharmProjects\LF7Gewachshaussteuerung\Abschnitt 1" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -41,8 +47,16 @@
       <updated>1668084444171</updated>
       <workItem from="1668084446486" duration="232000" />
       <workItem from="1668084769904" duration="971000" />
-      <workItem from="1668695369060" duration="1710000" />
+      <workItem from="1668695369060" duration="3106000" />
     </task>
+    <task id="LOCAL-00001" summary="added pdf Blockschaltplan.pdf">
+      <created>1668698217016</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1668698217016</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -61,5 +75,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="added pdf Blockschaltplan.pdf" />
+    <option name="LAST_COMMIT_MESSAGE" value="added pdf Blockschaltplan.pdf" />
   </component>
 </project>
