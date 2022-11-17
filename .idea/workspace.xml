@@ -31,6 +31,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Sebastians\PycharmProjects\LF7Gewachshaussteuerung\Abgabe" />
       <recent name="C:\Users\Sebastians\PycharmProjects\LF7Gewachshaussteuerung\Abschnitt 2" />
       <recent name="C:\Users\Sebastians\PycharmProjects\LF7Gewachshaussteuerung\Abschnitt 1" />
     </key>
@@ -45,7 +46,7 @@
       <updated>1668084444171</updated>
       <workItem from="1668084446486" duration="232000" />
       <workItem from="1668084769904" duration="971000" />
-      <workItem from="1668695369060" duration="4174000" />
+      <workItem from="1668695369060" duration="4227000" />
     </task>
     <task id="LOCAL-00001" summary="added pdf Blockschaltplan.pdf">
       <created>1668698217016</created>
@@ -68,7 +69,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668700767994</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added files">
+      <created>1668701223290</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1668701223290</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
