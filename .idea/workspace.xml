@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bcf44548-002f-42b3-b771-c1d07fcfb728" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Abschnitt 1/Blockschaltbild.vsdx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/materials/Gewächshaussteuerung_Projektaufgabenstellung.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/materials/RB-JoyPi-Anleitung-2022-04-08.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/materials/RB-JoyPi-Manual-2022-04-08.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,14 +23,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -46,6 +41,7 @@
       <updated>1668084444171</updated>
       <workItem from="1668084446486" duration="232000" />
       <workItem from="1668084769904" duration="971000" />
+      <workItem from="1668695369060" duration="1710000" />
     </task>
     <servers />
   </component>
