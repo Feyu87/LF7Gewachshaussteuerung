@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FRAME GUID="2FB25471-B62C-4EE6-BD43-F819C095ACF8" FORMAT="0000" APP_VERSION="2.2.0.8" CHECKSUM="CD3957E01D09BF56">
+  <PROJECT FORMAT="1.00" NAME="LF7GewachshausSpannekrebsSebastianIT211" AUTHOR="Sebastian" CREATED="2022.11.18 08:35:32" MODIFIED="2022.11.18 08:55:54">
+    <DIAGRAMS>
+      <DIAGRAM FORMAT="1.00" ID="1" NAME="LF7GewaechshaussteuerungSpannekrebsSebastianIT211" CREATED="2022.11.18 08:37:42" MODIFIED="2022.11.18 08:55:54">
+        <LAYOUT FORMAT="1.00" COLUMNS="2" ROWS="10">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="32">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="7">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="31">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[LF7GewaechshaussteuerungSpannekrebsSebastianIT211]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapLoopStart" FORMAT="1.00" ID="4" ASSOCIATE="5">
+                <TEXT><![CDATA[While True]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="20">
+                <TEXT><![CDATA[instance = dht11.DHT11(pin=4)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="22">
+                <TEXT><![CDATA[result = instance.read()]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="25">
+                <TEXT><![CDATA[print('Temperatur: %-3.1f C*' % result.temperature)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="27">
+                <TEXT><![CDATA[print('Feuchtigkeit: %-3.1f %%*' % result.humidity)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="7">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="29">
+                <TEXT><![CDATA[time.sleep(15.0)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="8">
+              <FIGURE SUBTYPE="PapLoopEnd" FORMAT="1.00" ID="5" ASSOCIATE="4">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="9">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[Ende]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="26" FROM="25" TO="27" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="24" FROM="20" TO="22" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="6" FROM="4" TO="20" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="19" FROM="1" TO="4" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="23" FROM="22" TO="25" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="28" FROM="27" TO="29" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="33" FROM="29" TO="31" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="34" FROM="31" TO="32" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="35" FROM="32" TO="4" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="37" FROM="5" TO="2" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+    </DIAGRAMS>
+  </PROJECT>
+</FRAME>
