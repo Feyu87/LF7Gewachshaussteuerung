@@ -1,0 +1,67 @@
+Index: script.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import RPi.GPIO as GPIO\nimport dht11\nimport board\nimport time\nimport os\nimport sys\n\nfrom adafruit_ht16k33.segments import Seg7x4\n\n# initialize GPIO\nGPIO.setwarnings(False)\nGPIO.setmode(GPIO.BCM)\nGPIO.cleanup()\n#aufbau einer while schleife zum wiederholten Messdurchfuehrung\nwhile True:\n\t#auslesen des Senosors DHT11 des pins 4 mit der Methode dht11. Daten werden in der Variable\n\t#instance hinterlegt\n\tinstance = dht11.DHT11(pin=4)\n\t#die Werte der Variablen instance werden mit der Methode read() ausgelesen und in der Variablen\n\t#result gespeichert\n\tresult = instance.read()\n\t#Konsolenausgabe einer Leerzeile\n\tprint('\t\t\t')\n\t# Konsolenausgabe eines String Wertes 'Neue Messung'\n\tprint('Neue Messung')\n\t# Konsolenausgabe einer Leerzeile\n\tprint('\t\t\t')\n\t# Konsolenausgabe mit dem String Temperatur und des Platzhaltes mit der einstelligen Dezimalausgabe formatiert\n\t# angehängt die Variable result mit der Methode temperature\n\tprint('Temperature: %-3.1f C*' % result.temperature)\n\t# Konsolenausgabe mit dem String Feuchtigkeit und des Platzhaltes mit der einstelligen Dezimalausgabe formatiert\n\t# angehängt die Variable result mit der Methode humidity\n\tprint(\"Feuchtigkeit: %-3.1f %%\" % result.humidity)\n\t#setzen eines breaks für 15 Sekunden, indem die aktuelle Zeit mit der festgehaltenen Startzeit subtrahiert wird.\n\t# ist der Wert 15.0 erreicht, so wird wieder zum schleifenanfang gesprungen und der Durchlauf beginnt solange endlos, bis das Programm\n\t# abgebrochen wird\n\ttime.sleep(15.0)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/script.py b/script.py
+--- a/script.py	(revision 878287214a6ee822882a6bf1533104e48a70000e)
++++ b/script.py	(date 1671096112629)
+@@ -12,7 +12,7 @@
+ GPIO.setmode(GPIO.BCM)
+ GPIO.cleanup()
+ #aufbau einer while schleife zum wiederholten Messdurchfuehrung
+-while True:
++while i<21:
+ 	#auslesen des Senosors DHT11 des pins 4 mit der Methode dht11. Daten werden in der Variable
+ 	#instance hinterlegt
+ 	instance = dht11.DHT11(pin=4)
+@@ -34,4 +34,4 @@
+ 	#setzen eines breaks für 15 Sekunden, indem die aktuelle Zeit mit der festgehaltenen Startzeit subtrahiert wird.
+ 	# ist der Wert 15.0 erreicht, so wird wieder zum schleifenanfang gesprungen und der Durchlauf beginnt solange endlos, bis das Programm
+ 	# abgebrochen wird
+-	time.sleep(15.0)
+\ No newline at end of file
++	time.sleep(15.0)
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"bcf44548-002f-42b3-b771-c1d07fcfb728\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/Abschnitt 1/Blockschaltbild.vsdx\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/materials/Gewächshaussteuerung_Projektaufgabenstellung.pdf\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/materials/RB-JoyPi-Anleitung-2022-04-08.pdf\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/materials/RB-JoyPi-Manual-2022-04-08.pdf\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/script.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/script.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2HMABa4IQvBS64oSnvGbHJiB0lM\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"ASKED_ADD_EXTERNAL_FILES\": \"true\",\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"WebServerToolWindowFactoryState\": \"false\"\n  }\n}]]></component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"bcf44548-002f-42b3-b771-c1d07fcfb728\" name=\"Changes\" comment=\"\" />\n      <created>1668084444171</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1668084444171</updated>\n      <workItem from=\"1668084446486\" duration=\"232000\" />\n      <workItem from=\"1668084769904\" duration=\"971000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"ADD_EXTERNAL_FILES_SILENTLY\" value=\"true\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 878287214a6ee822882a6bf1533104e48a70000e)
++++ b/.idea/workspace.xml	(date 1671096133590)
+@@ -2,10 +2,6 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="bcf44548-002f-42b3-b771-c1d07fcfb728" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/Abschnitt 1/Blockschaltbild.vsdx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/materials/Gewächshaussteuerung_Projektaufgabenstellung.pdf" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/materials/RB-JoyPi-Anleitung-2022-04-08.pdf" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/materials/RB-JoyPi-Manual-2022-04-08.pdf" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
+     </list>
+@@ -33,7 +29,8 @@
+     "ASKED_ADD_EXTERNAL_FILES": "true",
+     "RunOnceActivity.OpenProjectViewOnStart": "true",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "WebServerToolWindowFactoryState": "false"
++    "WebServerToolWindowFactoryState": "false",
++    "vue.rearranger.settings.migration": "true"
+   }
+ }]]></component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+@@ -45,7 +42,8 @@
+       <option name="presentableId" value="Default" />
+       <updated>1668084444171</updated>
+       <workItem from="1668084446486" duration="232000" />
+-      <workItem from="1668084769904" duration="971000" />
++      <workItem from="1668084769904" duration="1318000" />
++      <workItem from="1671095979899" duration="154000" />
+     </task>
+     <servers />
+   </component>
