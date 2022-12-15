@@ -30,4 +30,5 @@ def Anzeige(Temperatur, Luftfeuchtigkeit):
     #Luftfeuchtigkeitswerte eingeben
     segment.set_digit(2, int(luft[0]))
     segment.set_digit(3, int(luft[1]))
+    # Display aktualisieren
     segment.write_display()
