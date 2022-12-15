@@ -10,6 +10,10 @@ segment.begin()
 
 # Methode mit den Eingabewerten Temperatur und Luftfeuchtigkeit deklarieren
 def Anzeige(Temperatur, Luftfeuchtigkeit):
+    # Werte einmal in der Komandozeile ausgeben
     print('Temperatur: %.1f °C' %Temperatur)
     print('Feuchtigkeit: %.0f %' %Luftfeuchtigkeit)
+    # Temperatur in einzelne Werte zerteilen
+    temp = [int(i) for i in str(Temperatur)]
+    
 
