@@ -59,3 +59,6 @@ def LCD(Temperatur, Luftfeuchtigkeit):
     # Nachricht anzeigen
     lcd.message = msg
     print('LCD succes')
+
+if(__name__ == '__main__'):
+    Anzeige(27.3, 50.0)
