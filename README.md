@@ -6,3 +6,4 @@
   - Codecleanup
   - Zeilen kommentieren
   - Integration in Dokumentation
+  - Gibt es eine möglichkeit ° zeichen auf dem lcd display anzeigen zu lassen ?
