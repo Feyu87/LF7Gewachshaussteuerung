@@ -20,7 +20,7 @@ def getNTPTime(host = "10.254.5.115"):
  
         t = struct.unpack( "!12I", msg )[10]
         t -= TIME1970
-        return time.ctime(t).replace("  "," ")
+        return time.ctime(t).replace(" "," ")
  
 if __name__ == "__main__":
         print(getNTPTime())
