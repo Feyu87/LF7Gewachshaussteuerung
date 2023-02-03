@@ -50,3 +50,6 @@ def main():
         pass
 if __name__ == "__main__":
     main()
+
+#Wenn die Lux Anzahl im guten Bereich ist, soll auf der Matrixanzeige ein Symbol erscheinen.
+#Andernfalls ein negatives Symbol
