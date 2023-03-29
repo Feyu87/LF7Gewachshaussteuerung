@@ -85,3 +85,80 @@ if __name__ == "__main__":
 
 #Wenn die Lux Anzahl im guten Bereich ist, soll auf der Matrixanzeige ein Symbol erscheinen.
 #Andernfalls ein negatives Symbol
+
+#CHATGPT ALTERNATIVE
+
+import Adafruit_DHT
+import time
+import smbus
+import math
+from Adafruit_LED_Backpack import Matrix8x8
+
+# Initialisierung der 8x8 LED-Matrix
+display = Matrix8x8.Matrix8x8(address=0x70)
+
+# Initialisierung des Lichtsensors
+bus = smbus.SMBus(1)
+addr = 0x39 # Adresse des TSL2561-Sensors
+# Kontroll- und Timing-Registerbits
+CONTROL = 0x00
+TIMING = 0x01
+# Kanal 0 und Kanal 1 Lesebefehle
+CHAN0_LOW = 0x0C
+CHAN0_HIGH = 0x0D
+CHAN1_LOW = 0x0E
+CHAN1_HIGH = 0x0F
+
+# Sensor-Typ und Pin-Nummer für den DHT11-Sensor
+sensor = Adafruit_DHT.DHT11
+pin = 4
+
+while True:
+    # Versuche, die Temperatur und Luftfeuchtigkeit vom DHT11-Sensor abzurufen
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    # Wenn ein gültiger Wert abgerufen wurde, gib ihn auf dem LCD aus
+    if humidity is not None and temperature is not None:
+        display.clear()
+        display.print_float(temperature)
+        display.write_display()
+    else:
+        display.clear()
+        display.print('Error')
+        display.write_display()
+
+    # Lese den Lichtsensor
+    data = bus.read_i2c_block_data(addr, CONTROL, 2)
+    timing = bus.read_i2c_block_data(addr, TIMING, 2)
+    ch0 = data[1] * 256 + data[0]
+    ch1 = data[3] * 256 + data[2]
+
+    # Berechne die Lichtintensität in Lux
+    if timing[0] == 0:
+        timing[0] = 1
+    ratio = float(ch1) / float(ch0)
+    if ratio > 1.5:
+        lux = (0.0304 * ch0) - (0.062 * ch0 * ((ratio) ** 1.4))
+    elif ratio > 0.5:
+        lux = (0.0224 * ch0) - (0.031 * ch1)
+    else:
+        lux = (0.0128 * ch0) - (0.0153 * ch1)
+    lux = lux / timing[0]
+
+    # Zeige ein lachendes oder weinendes Smiley basierend auf der Lichtintensität an
+    if lux > 800:
+        display.clear()
+        display.set_pixel(1, 2, 1)
+        display.set_pixel(6, 2, 1)
+        display.set_pixel(2, 3, 1)
+        display.set_pixel(5, 3, 1)
+        display.set_pixel(2, 4, 1)
+        display.set_pixel(5, 4, 1)
+        display.set_pixel(2, 5, 1)
+        display.set_pixel(3, 5, 1)
+        display.set_pixel(4, 5, 1)
+        display.write_display()
+    else:
+        display.clear()
+        display.set_pixel(2, 2, 1)
+
