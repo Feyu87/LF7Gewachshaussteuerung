@@ -9,26 +9,34 @@ from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, CP437_FONT
 import adafruit_character_lcd.character_lcd_i2c as character_lcd
 
-# Initialize the BH1750FVI sensor
+# Initialisierung des BH1750FVI Sensors
 bus = smbus.SMBus(1)  # Use SMBus 1 for all Raspberry Pi models
 DEVICE = 0x5c  # Default device I2C address
 ONE_TIME_HIGH_RES_MODE_1 = 0x20  # Start measurement at 1 Lux
 
-
+# Festlegung der Klasse Lichtsensor
 class LightSensor():
+		 # Funktion zum ansprechen des Lichtsensors
     def read_light_sensor(self):
-        # Read data from the sensor and convert it to lux
+        # auslesen der Daten und transferierung in data variable
         data = bus.read_i2c_block_data(DEVICE, ONE_TIME_HIGH_RES_MODE_1)
+					# auslesen der Daten in ein Array um das Lichtlevel zu definieren
         light_level = ((data[1] + (256 * data[0])) / 1.2)
+					# Rückgabe der Lichtleveldaten
         return light_level
 
+		 # Funktion zum Festlegen und Abfragen von Daten zur aktuellen Tageszeit
     def setDayLightOffset(self):
+					# setzen der offset Flag auf false
         offset = False
+					# Setzen der Tageszeit und der aktuellen Tageszeit
         dt = datetime.datetime.now()
-
+					
+					# Abfragen, ob die aktuelle Tageszeit vor 6 uhr morgens und 18 Uhr abends liegt
         if (dt.time() <= datetime.time(6) and dt.time() >= datetime.time(18)):
+								# setzen des offsets auf wahr
             offset = True
-            # nach sonnenaufgaban und bevor sonnen untergang
+            # nach dämmerung und abends rückgabe des offstes
         return offset
 
 
