@@ -14,10 +14,15 @@ from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, CP437_FONT
 from luma.led_matrix.device import max7219 as led
 
+
+#Zeitservers (10.254.5.115) einbinden in timestamp
+
+
 bus = smbus.SMBus(1)
 DEVICE = 0x5c
 ONE_TIME_HIGH_RES_MODE_1 = 0x20
-
+relay_pin_light = 21
+dht11_pin = 7
 
 class LightSensor():
     def read_light_sensor(self):
@@ -53,14 +58,21 @@ def write_to_csv(temp, humid, light_level):
     file_exists = os.path.isfile("sensor_data.csv")
 
     with open("sensor_data.csv", mode="a", newline='') as sensor_data_file:
-        fieldnames = ["timestamp", "temperature", "humidity", "light_level"]
+        fieldnames = ["timestamp", "temperature", "temp_sensor", "humidity", "humid_sensor", "light_level", "light_sensor"]
         writer = csv.DictWriter(sensor_data_file, fieldnames=fieldnames)
 
         if not file_exists:
             writer.writeheader()
 
-        writer.writerow({"timestamp": datetime.datetime.now(), "temperature": str(temp[0]) + str(temp[1]),
-                         "humidity": str(humid[0]) + str(humid[1]), "light_level": light_level})
+        writer.writerow({"timestamp": datetime.datetime.now(),
+                         "temperature": str(temp[0]) + str(temp[1]),
+                         "temp_sensor": "DHT11",
+                         "humidity": str(humid[0]) + str(humid[1]),
+                         "humid_sensor": "DHT11",
+                         "light_level": light_level,
+                         "light_sensor": "BH1750"})
+
+
 
 
 def main():
@@ -79,6 +91,7 @@ def main():
         light_level = sensor.read_light_sensor()
         print("Licht ausgeschaltet" if sensor.set_day_light_offset() else "Licht eingeschaltet")
 
+
         write_to_csv(temp, humid, light_level)
         show_message(device, get_light_level_symbol(light_level), fill="white", font=proportional(CP437_FONT),
                      scroll_delay=0.1)
@@ -96,3 +109,4 @@ def get_light_level_symbol(light_level):
 
 if __name__ == "__main__":
     main()
+
