@@ -40,19 +40,19 @@ class LightSensor():
         # Setzen der Tageszeit und der aktuellen Tageszeit
         dt = datetime.datetime.now().time()
 
-        # Abfragen, ob die aktuelle Tageszeit vor 6 uhr morgens und 18 Uhr abends liegt
+        # Abfragen, ob die aktuelle Tageszeit vor 6 Uhr morgens und 18 Uhr abends liegt
         if datetime.time(6) <= dt <= datetime.time(18):
             # setzen des offsets auf wahr
             offset = True
-        # nach dämmerung und abends rückgabe des offstes
+        # nach Dämmerung und abends Rückgabe des Offsets
         return offset
 
     @staticmethod
     def getTime():
         ntp_client = ntplib.NTPClient()
-        response = ntp_client.request('10.254.5.115')
-        currenttime = datetime.datetime.fromtimestamp(response.tx_time)
-        return currenttime
+        response = ntp_client.request('pool.ntp.org')
+        current_time = datetime.datetime.fromtimestamp(response.tx_time)
+        return current_time
 
 
 # Initialisierung des Moduls MAX7219CWG Matrix 8x8
@@ -76,15 +76,16 @@ def main():
     sensor = LightSensor()
     # Überprüfen, ob die CSV-Datei bereits existiert
     file_exists = os.path.isfile("sensor_data.csv")
+    fieldnames = ["timestamp", "temperature", "humidity", "light_level"]
 
     while True:
-        # das resultat der der daten wird im resultat abgelegt
+        # das resultat der Daten wird im resultat abgelegt
         result = instance.read()
-        # es wird abgefragt ob die ausgelesenen daten valide sind
+        # es wird abgefragt ob die ausgelesenen Daten valide sind
         if result.is_valid():
-            # schreiben der ausgelesenen temperaturwerte in die temp variable
+            # schreiben der ausgelesenen Temperaturwerte in die temp variable
             temp = str(round(result.temperature))
-            # schreiben der ausgelesenen feuchtigkeitswerte in die humid variable
+            # schreiben der ausgelesenen Feuchtigkeitswerte in die humid variable
             humid = str(round(result.humidity))
             # livedatenanzeige im 7 segment display
             segment[0] = temp[0]
@@ -92,20 +93,19 @@ def main():
             # schreibt die Zahl auf den jeweiligen Slot
             segment[2] = humid[0]
             segment[3] = humid[1]
-            # aktualisiert die daten auf dem led
+            # aktualisiert die Daten auf dem led
             lcd.message = f"Temp: {temp} C\nHumidity: {humid}%"
-        # der sensor des lichtlevels wird ausgelesen
+        # der Sensor des Lichtlevels wird ausgelesen
         light_level = sensor.read_light_sensor()
-        # ist es tageszeit, so wird kein licht zugeführt
+        # ist es Tageszeit, so wird kein Licht zugeführt
         if sensor.setDayLightOffset():
             print("Licht ausgeschaltet")
-        # ansonsten wird das licht eingeschaltet
+        # ansonsten wird das Licht eingeschaltet
         else:
             print('Licht eingeschaltet')
 
         # Schreiben der Sensordaten in die CSV-Datei
         with open("sensor_data.csv", mode="a", newline='') as sensor_data_file:
-            fieldnames = ["timestamp", "temperature", "humidity", "light_level"]
             writer = csv.DictWriter(sensor_data_file, fieldnames=fieldnames)
 
             # Schreiben der Spaltenüberschriften, wenn die Datei neu erstellt wurde
@@ -113,32 +113,33 @@ def main():
                 writer.writeheader()
 
             # Schreiben der Sensordaten in die Datei
+            current_time = sensor.getTime()
             writer.writerow({
-                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "timestamp": str(current_time),
                 "temperature": temp,
                 "humidity": humid,
                 "light_level": light_level
             })
 
-        # ist das lichlevel unter 15000 lux so soll die lichtstärke mit dem symbol + angehoben werden
+        # ist das Lichtlevel unter 15000 Lux, so soll die Lichtstärke mit dem Symbol '+' angehoben werden
         if light_level < 15000:
             symbol = "+"
-            # wartet eine sekunde zum einlesen neuer werte
+            # wartet eine Sekunde zum Einlesen neuer Werte
             time.sleep(1)
-        # ist das lichlevel über 25000 lux so soll die lichtstärke mit dem symbol - gesenkt werden
+        # ist das Lichtlevel über 25000 Lux, so soll die Lichtstärke mit dem Symbol '-' gesenkt werden
         elif light_level > 25000:
             symbol = "-"
-            # wartet eine sekunde zum einlesen neuer werte
+            # wartet eine Sekunde zum Einlesen neuer Werte
             time.sleep(1)
         else:
-            # sollten beide bedingungen nicht zutreffen ist der optimale lichtwert zwischen 15000 und 25000 lux
+            # sollten beide Bedingungen nicht zutreffen, ist der optimale Lichtwert zwischen 15000 und 25000 Lux
             symbol = "="
-            # wartet eine sekunde zum einlesen neuer werte
+            # wartet eine Sekunde zum Einlesen neuer Werte
             time.sleep(1)
-        # aktualisieren der matrix mit dem jeweiligen symbol
+        # aktualisieren der Matrix mit dem jeweiligen Symbol
         show_message(device, symbol, fill="white", font=proportional(CP437_FONT), scroll_delay=0.1)
 
 
-# starten des programms
+# starten des Programms
 if __name__ == "__main__":
     main()
