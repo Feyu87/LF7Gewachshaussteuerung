@@ -1,0 +1,114 @@
+Index: Abschnitt 5/abschnitt5.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#!/usr/bin/python\r\n# -*- coding: utf-8 -*-\r\n# Author: Matt Hawkins\r\n# Author's Git: https://bitbucket.org/MattHawkinsUK/\r\n# Author's website: https://www.raspberrypi-spy.co.uk\r\nimport RPi.GPIO as GPIO\r\nimport smbus\r\nimport time\r\nimport re\r\nfrom luma.led_matrix.device import max7219\r\nfrom luma.core.interface.serial import spi, noop\r\nfrom luma.core.render import canvas\r\nfrom luma.core.virtual import viewport\r\nfrom luma.core.legacy import text, show_message\r\nfrom luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT, SINCLAIR_FONT, LCD_FONT\r\n\r\nif(GPIO.RPI_REVISION == 1):\r\n    bus = smbus.SMBus(0)\r\nelse:\r\n    bus = smbus.SMBus(1)\r\nclass LightSensor():\r\n    def __init__(self):\r\n    # Definiere Konstante vom Datenblatt\r\n        self.DEVICE = 0x5c # Standard I2C Geräteadresse\r\n        self.POWER_DOWN = 0x00 # Kein aktiver zustand\r\n        self.POWER_ON = 0x01 # Betriebsbereit\r\n        self.RESET = 0x07 # Reset des Data registers\r\n # Starte Messungen ab 4 Lux.\r\n        self.CONTINUOUS_LOW_RES_MODE = 0x13\r\n # Starte Messungen ab 1 Lux.\r\n        self.CONTINUOUS_HIGH_RES_MODE_1 = 0x10\r\n # Starte Messungen ab 0.5 Lux.\r\n        self.CONTINUOUS_HIGH_RES_MODE_2 = 0x11\r\n # Starte Messungen ab 1 Lux.\r\n # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.\r\n        self.ONE_TIME_HIGH_RES_MODE_1 = 0x20\r\n # Starte Messungen ab 0.5 Lux.\r\n # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.\r\n        self.ONE_TIME_HIGH_RES_MODE_2 = 0x21\r\n # Starte Messungen ab 4 Lux.\r\n # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.\r\n        self.ONE_TIME_LOW_RES_MODE = 0x23\r\n\r\n    def convertToNumber(self, data):\r\n # Einfache Funktion um 2 Bytes Daten\r\n # in eine Dezimalzahl umzuwandeln\r\n        return ((data[1] + (256 * data[0])) / 1.2)\r\n    def readLight(self):\r\n        data = bus.read_i2c_block_data(self.DEVICE,self.ONE_TIME_HIGH_RES_MODE_1)\r\n        return self.convertToNumber(data)\r\ndef main(cascaded, block_orientation, rotate):\r\n    # Matrix Gerät festlegen und erstellen. \r\n    serial = spi(port=0, device=1, gpio=noop()) \r\n    device = max7219(serial, cascaded=cascaded or 1, block_orientation=block_orientation, \r\n    rotate=rotate or 0) \r\n    # Matrix Initialisierung in der Konsole anzeigen \r\n    print(\"[-]\")\r\n    \r\n    # Hallo Welt in der Matrix anzeigen \r\n    msg = \"+\"\r\n    # Ausgegebenen Text in der Konsole Anzeigen \r\n    print(\"[-] Printing: %s\" % msg) \r\n    show_message(device, msg, fill=\"white\", font=proportional(CP437_FONT), scroll_delay=0.1)\r\n    \r\n    sensor = LightSensor()\r\n    \r\n    try:\r\n        while True:\r\n                if str(sensor.readLight()):\r\n                    print(\"Lichtstärke gut: \" + str(sensor.readLight()) + \" lx\")\r\n                else:\r\n                   print(\"Lichtstärke schlecht: \" + str(sensor.readLight()) + \" lx\")\r\n            time.sleep(1)\r\n    except KeyboardInterrupt:\r\n        pass\r\nif __name__ == \"__main__\":\r\n    # cascaded = Anzahl von MAX7219 LED Matrixen, standard=1 \r\n    # block_orientation = choices 0, 90, -90, standard=0 \r\n    # rotate = choices 0, 1, 2, 3, Rotate display 0=0°, 1=90°, 2=180°, 3=270°, standard=0 \r\n    \r\n    try:\r\n        main(cascaded=1, block_orientation=90, rotate=0)\r\n    except KeyboardInterrupt:\r\n        pass\r\n\r\n#Wenn die Lux Anzahl im guten Bereich ist, soll auf der Matrixanzeige ein Symbol erscheinen.\r\n#Andernfalls ein negatives Symbol\r\n\r\n#CHATGPT ALTERNATIVE\r\n\r\nimport Adafruit_DHT\r\nimport time\r\nimport smbus\r\nimport math\r\nfrom Adafruit_LED_Backpack import Matrix8x8\r\n\r\n# Initialisierung der 8x8 LED-Matrix\r\ndisplay = Matrix8x8.Matrix8x8(address=0x70)\r\n\r\n# Initialisierung des Lichtsensors\r\nbus = smbus.SMBus(1)\r\naddr = 0x39 # Adresse des TSL2561-Sensors\r\n# Kontroll- und Timing-Registerbits\r\nCONTROL = 0x00\r\nTIMING = 0x01\r\n# Kanal 0 und Kanal 1 Lesebefehle\r\nCHAN0_LOW = 0x0C\r\nCHAN0_HIGH = 0x0D\r\nCHAN1_LOW = 0x0E\r\nCHAN1_HIGH = 0x0F\r\n\r\n# Sensor-Typ und Pin-Nummer für den DHT11-Sensor\r\nsensor = Adafruit_DHT.DHT11\r\npin = 4\r\n\r\nwhile True:\r\n    # Versuche, die Temperatur und Luftfeuchtigkeit vom DHT11-Sensor abzurufen\r\n    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)\r\n\r\n    # Wenn ein gültiger Wert abgerufen wurde, gib ihn auf dem LCD aus\r\n    if humidity is not None and temperature is not None:\r\n        display.clear()\r\n        display.print_float(temperature)\r\n        display.write_display()\r\n    else:\r\n        display.clear()\r\n        display.print('Error')\r\n        display.write_display()\r\n\r\n    # Lese den Lichtsensor\r\n    data = bus.read_i2c_block_data(addr, CONTROL, 2)\r\n    timing = bus.read_i2c_block_data(addr, TIMING, 2)\r\n    ch0 = data[1] * 256 + data[0]\r\n    ch1 = data[3] * 256 + data[2]\r\n\r\n    # Berechne die Lichtintensität in Lux\r\n    if timing[0] == 0:\r\n        timing[0] = 1\r\n    ratio = float(ch1) / float(ch0)\r\n    if ratio > 1.5:\r\n        lux = (0.0304 * ch0) - (0.062 * ch0 * ((ratio) ** 1.4))\r\n    elif ratio > 0.5:\r\n        lux = (0.0224 * ch0) - (0.031 * ch1)\r\n    else:\r\n        lux = (0.0128 * ch0) - (0.0153 * ch1)\r\n    lux = lux / timing[0]\r\n\r\n    # Zeige ein lachendes oder weinendes Smiley basierend auf der Lichtintensität an\r\n    if lux > 800:\r\n        display.clear()\r\n        display.set_pixel(1, 2, 1)\r\n        display.set_pixel(6, 2, 1)\r\n        display.set_pixel(2, 3, 1)\r\n        display.set_pixel(5, 3, 1)\r\n        display.set_pixel(2, 4, 1)\r\n        display.set_pixel(5, 4, 1)\r\n        display.set_pixel(2, 5, 1)\r\n        display.set_pixel(3, 5, 1)\r\n        display.set_pixel(4, 5, 1)\r\n        display.write_display()\r\n    else:\r\n        display.clear()\r\n        display.set_pixel(2, 2, 1)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Abschnitt 5/abschnitt5.py b/Abschnitt 5/abschnitt5.py
+--- a/Abschnitt 5/abschnitt5.py	(revision 699df9ca6ec3faef159a478ac82456781f988bb9)
++++ b/Abschnitt 5/abschnitt5.py	(date 1680242855917)
+@@ -158,7 +158,7 @@
+         display.set_pixel(3, 5, 1)
+         display.set_pixel(4, 5, 1)
+         display.write_display()
+-    else:
++    elif ():
+         display.clear()
+         display.set_pixel(2, 2, 1)
+ 
+Index: Abschnitt 5/abschnitt51.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Abschnitt 5/abschnitt51.py b/Abschnitt 5/abschnitt51.py
+new file mode 100644
+--- /dev/null	(date 1680244770925)
++++ b/Abschnitt 5/abschnitt51.py	(date 1680244770925)
+@@ -0,0 +1,85 @@
++import time
++import datetime
++import smbus, dht11, board, busio
++import RPi.GPIO as GPIO
++from adafruit_ht16k33.segments import Seg7x4
++from luma.led_matrix.device import max7219 as led
++from luma.core.interface.serial import spi, noop
++from luma.core.legacy import text, show_message
++from luma.core.legacy.font import proportional, CP437_FONT
++import adafruit_character_lcd.character_lcd_i2c as character_lcd
++
++# Initialize the BH1750FVI sensor
++bus = smbus.SMBus(1)  # Use SMBus 1 for all Raspberry Pi models
++DEVICE = 0x5c  # Default device I2C address
++ONE_TIME_HIGH_RES_MODE_1 = 0x20  # Start measurement at 1 Lux
++
++
++class LightSensor():
++    def read_light_sensor(self):
++        # Read data from the sensor and convert it to lux
++        data = bus.read_i2c_block_data(DEVICE, ONE_TIME_HIGH_RES_MODE_1)
++        light_level = ((data[1] + (256 * data[0])) / 1.2)
++        return light_level
++
++    def setDayLightOffset(self):
++        offset = False
++        dt = datetime.datetime.now()
++
++        if (dt.time() <= datetime.time(6) and dt.time() >= datetime.time(18)):
++            offset = True
++            # nach sonnenaufgaban und bevor sonnen untergang
++        return offset
++
++
++# Initialize the MAX7219CWG matrix display
++i2c = board.I2C()
++serial = spi(port=0, device=1, gpio=noop())
++device = led(serial, cascaded=1, block_orientation=90, rotate=0)
++segment = Seg7x4(board.I2C(), address=0x70)
++segment.fill(0)  # Clear 7-segment display
++lcd = character_lcd.Character_LCD_I2C(i2c, 16, 2, 0x21)
++
++
++# Loop to continuously read sensor data and update the matrix display
++def main():
++    instance = dht11.DHT11(pin=4)
++    sensor = LightSensor()
++    while True:
++        result = instance.read()
++        if (result.is_valid()):
++            temp = [int(x) for x in str(round(result.temperature))]
++            humid = [int(x) for x in str(round(result.humidity))]
++            # Update 7-segment display
++            segment[0] = str(temp[0])
++            segment[1] = str(temp[1])
++            # schreibt die Zahl auf den jeweiligen Slot
++            segment[2] = str(humid[0])
++            segment[3] = str(humid[1])
++            # Update LCD display
++            lcd.message = f"Temp: {str(temp[0]) + str(temp[1])} C\nHumidity: {str(humid[0]) + str(humid[1])}%"
++        light_level = sensor.read_light_sensor()
++        # print(sensor.setDayLightOffset)
++        if (sensor.setDayLightOffset()):
++            print("Licht ausgeschaltet")
++        else:
++            print('Licht eingeschaltet')
++        # Evaluate the brightness level and assign a symbol
++        if light_level < 15000:
++            symbol = "+"
++            C
++            time.sleep(1)
++        elif light_level > 25000:
++            symbol = "-"
++            print("Lichtstärke zu intensiv: " + light_level + " lx")
++            time.sleep(1)
++        else:
++            symbol = "="
++            time.sleep(1)
++        # Update the matrix display with the appropriate symbol
++        show_message(device, symbol, fill="white", font=proportional(CP437_FONT), scroll_delay=0.1)
++
++
++if __name__ == "__main__":
++    main()
++

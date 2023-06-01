@@ -1,111 +1,164 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Author: Matt Hawkins
+# Author's Git: https://bitbucket.org/MattHawkinsUK/
+# Author's website: https://www.raspberrypi-spy.co.uk
 import RPi.GPIO as GPIO
-import adafruit_character_lcd.character_lcd_i2c as character_lcd
-import board
-import busio
-import datetime
-import dht11
 import smbus
 import time
-from adafruit_ht16k33.segments import Seg7x4
+import re
+from luma.led_matrix.device import max7219
 from luma.core.interface.serial import spi, noop
+from luma.core.render import canvas
+from luma.core.virtual import viewport
 from luma.core.legacy import text, show_message
-from luma.core.legacy.font import proportional, CP437_FONT
-from luma.led_matrix.device import max7219 as led
+from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT, SINCLAIR_FONT, LCD_FONT
 
-# Initialisierung des BH1750FVI Sensors
-bus = smbus.SMBus(1)  # Use SMBus 1 for all Raspberry Pi models
-DEVICE = 0x5c  # Default device I2C address
-ONE_TIME_HIGH_RES_MODE_1 = 0x20  # Start measurement at 1 Lux
-
-
-# Festlegung der Klasse Lichtsensor
+if(GPIO.RPI_REVISION == 1):
+    bus = smbus.SMBus(0)
+else:
+    bus = smbus.SMBus(1)
 class LightSensor():
-    # Funktion zum ansprechen des Lichtsensors
-    def read_light_sensor(self):
-        # auslesen der Daten und transferierung in data variable
-        data = bus.read_i2c_block_data(DEVICE, ONE_TIME_HIGH_RES_MODE_1)
-        # auslesen der Daten in ein Array um das Lichtlevel zu definieren
-        light_level = ((data[1] + (256 * data[0])) / 1.2)
-        # Rückgabe der Lichtleveldaten
-        return light_level  # Funktion zum Festlegen und Abfragen von Daten zur aktuellen Tageszeit
+    def __init__(self):
+    # Definiere Konstante vom Datenblatt
+        self.DEVICE = 0x5c # Standard I2C Geräteadresse
+        self.POWER_DOWN = 0x00 # Kein aktiver zustand
+        self.POWER_ON = 0x01 # Betriebsbereit
+        self.RESET = 0x07 # Reset des Data registers
+ # Starte Messungen ab 4 Lux.
+        self.CONTINUOUS_LOW_RES_MODE = 0x13
+ # Starte Messungen ab 1 Lux.
+        self.CONTINUOUS_HIGH_RES_MODE_1 = 0x10
+ # Starte Messungen ab 0.5 Lux.
+        self.CONTINUOUS_HIGH_RES_MODE_2 = 0x11
+ # Starte Messungen ab 1 Lux.
+ # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.
+        self.ONE_TIME_HIGH_RES_MODE_1 = 0x20
+ # Starte Messungen ab 0.5 Lux.
+ # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.
+        self.ONE_TIME_HIGH_RES_MODE_2 = 0x21
+ # Starte Messungen ab 4 Lux.
+ # Nach Messung wird Gerät in einen inaktiven Zustand gesetzt.
+        self.ONE_TIME_LOW_RES_MODE = 0x23
 
-    def setDayLightOffset(self):
-        # setzen der offset Flag auf false
-        offset = False
-        # Setzen der Tageszeit und der aktuellen Tageszeit
-        dt = datetime.datetime.now()
-
-        # Abfragen, ob die aktuelle Tageszeit vor 6 uhr morgens und 18 Uhr abends liegt
-        if (dt.time() <= datetime.time(6) and dt.time() >= datetime.time(18)):
-            # setzen des offsets auf wahr
-            offset = True  # nach dämmerung und abends rückgabe des offstes
-        return offset
-
-
-# Initialisierung des Moduls MAX7219CWG Matrix 8x8
-i2c = board.I2C()
-# portaufruf und schnittstellenverbindung
-serial = spi(port=0, device=1, gpio=noop())
-# Geräteinitialisierung
-device = led(serial, cascaded=1, block_orientation=90, rotate=0)
-# Segmentinitialisierungen
-segment = Seg7x4(board.I2C(), address=0x70)
-segment.fill(0)  # Clear 7-segment display
-# LCD Display Festlegungen
-lcd = character_lcd.Character_LCD_I2C(i2c, 16, 2, 0x21)
-
-
-# Es wird eine Endlosschleife zum lesen und ausgeben der Sensoren ausgeführt
-def main():
-    # Sensor für Temperatur und Luftfeuchtigkeit
-    instance = dht11.DHT11(pin=4)
-    # Lichtsensor wird festgelegt
+    def convertToNumber(self, data):
+ # Einfache Funktion um 2 Bytes Daten
+ # in eine Dezimalzahl umzuwandeln
+        return ((data[1] + (256 * data[0])) / 1.2)
+    def readLight(self):
+        data = bus.read_i2c_block_data(self.DEVICE,self.ONE_TIME_HIGH_RES_MODE_1)
+        return self.convertToNumber(data)
+def main(cascaded, block_orientation, rotate):
+    # Matrix Gerät festlegen und erstellen. 
+    serial = spi(port=0, device=1, gpio=noop()) 
+    device = max7219(serial, cascaded=cascaded or 1, block_orientation=block_orientation, 
+    rotate=rotate or 0) 
+    # Matrix Initialisierung in der Konsole anzeigen 
+    print("[-]")
+    
+    # Hallo Welt in der Matrix anzeigen 
+    msg = "+"
+    # Ausgegebenen Text in der Konsole Anzeigen 
+    print("[-] Printing: %s" % msg) 
+    show_message(device, msg, fill="white", font=proportional(CP437_FONT), scroll_delay=0.1)
+    
     sensor = LightSensor()
-    # endlosschleife solange das script läuft
-    while True:
-        # das resultat der der daten wird im resultat abgelegt
-        result = instance.read()
-        # es wird abgefragt ob die ausgelesenen daten valide sind
-        if (result.is_valid()):
-            # schreiben der ausgelesenen temperaturwerte in die temp variable
-            temp = [int(x) for x in str(round(result.temperature))]
-            # schreiben der ausgelesenen feuchtigkeitswerte in die humid variable
-            humid = [int(x) for x in str(round(result.humidity))]
-            # livedatenanzeige im 7 segment display
-            segment[0] = str(temp[0])
-            segment[1] = str(temp[1])
-            # schreibt die Zahl auf den jeweiligen Slot
-            segment[2] = str(humid[0])
-            segment[3] = str(humid[1])
-            # aktualisiert die daten auf dem led
-            lcd.message = f"Temp: {str(temp[0]) + str(temp[1])} C\nHumidity: {str(humid[0]) + str(humid[1])}%"
-        # der sensor des lichtlevels wird ausgelesen
-        light_level = sensor.read_light_sensor()
-        # ist es tageszeit, so wird kein licht zugeführt
-        if (sensor.setDayLightOffset()):
-            print("Licht ausgeschaltet")
-        # ansonsten wird das licht eingeschaltet
-        else:
-            print('Licht eingeschaltet')
-        # ist das lichlevel unter 15000 lux so soll die lichtstärke mit dem symbol + angehoben werden
-        if light_level < 15000:
-            symbol = "+"
-            # wartet eine sekunde zum einlesen neuer werte
+    
+    try:
+        while True:
+                if str(sensor.readLight()):
+                    print("Lichtstärke gut: " + str(sensor.readLight()) + " lx")
+                else:
+                   print("Lichtstärke schlecht: " + str(sensor.readLight()) + " lx")
             time.sleep(1)
-        # ist das lichlevel über 25000 lux so soll die lichtstärke mit dem symbol - gesenkt werden
-        elif light_level > 25000:
-            symbol = "-"
-            # wartet eine sekunde zum einlesen neuer werte
-            time.sleep(1)
-        else:
-            # sollten beide bedingungen nicht zutreffen ist der optimale lichtwert zwischen 15000 und 25000 lux
-            symbol = "="
-            # wartet eine sekunde zum einlesen neuer werte
-            time.sleep(1)
-        # aktualisieren der matrix mit dem jeweiligen symbol
-        show_message(device, symbol, fill="white", font=proportional(CP437_FONT), scroll_delay=0.1)
-
-
-# starten des programms
+    except KeyboardInterrupt:
+        pass
 if __name__ == "__main__":
-    main()
+    # cascaded = Anzahl von MAX7219 LED Matrixen, standard=1 
+    # block_orientation = choices 0, 90, -90, standard=0 
+    # rotate = choices 0, 1, 2, 3, Rotate display 0=0°, 1=90°, 2=180°, 3=270°, standard=0 
+    
+    try:
+        main(cascaded=1, block_orientation=90, rotate=0)
+    except KeyboardInterrupt:
+        pass
+
+#Wenn die Lux Anzahl im guten Bereich ist, soll auf der Matrixanzeige ein Symbol erscheinen.
+#Andernfalls ein negatives Symbol
+
+#CHATGPT ALTERNATIVE
+
+import Adafruit_DHT
+import time
+import smbus
+import math
+from Adafruit_LED_Backpack import Matrix8x8
+
+# Initialisierung der 8x8 LED-Matrix
+display = Matrix8x8.Matrix8x8(address=0x70)
+
+# Initialisierung des Lichtsensors
+bus = smbus.SMBus(1)
+addr = 0x39 # Adresse des TSL2561-Sensors
+# Kontroll- und Timing-Registerbits
+CONTROL = 0x00
+TIMING = 0x01
+# Kanal 0 und Kanal 1 Lesebefehle
+CHAN0_LOW = 0x0C
+CHAN0_HIGH = 0x0D
+CHAN1_LOW = 0x0E
+CHAN1_HIGH = 0x0F
+
+# Sensor-Typ und Pin-Nummer für den DHT11-Sensor
+sensor = Adafruit_DHT.DHT11
+pin = 4
+
+while True:
+    # Versuche, die Temperatur und Luftfeuchtigkeit vom DHT11-Sensor abzurufen
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    # Wenn ein gültiger Wert abgerufen wurde, gib ihn auf dem LCD aus
+    if humidity is not None and temperature is not None:
+        display.clear()
+        display.print_float(temperature)
+        display.write_display()
+    else:
+        display.clear()
+        display.print('Error')
+        display.write_display()
+
+    # Lese den Lichtsensor
+    data = bus.read_i2c_block_data(addr, CONTROL, 2)
+    timing = bus.read_i2c_block_data(addr, TIMING, 2)
+    ch0 = data[1] * 256 + data[0]
+    ch1 = data[3] * 256 + data[2]
+
+    # Berechne die Lichtintensität in Lux
+    if timing[0] == 0:
+        timing[0] = 1
+    ratio = float(ch1) / float(ch0)
+    if ratio > 1.5:
+        lux = (0.0304 * ch0) - (0.062 * ch0 * ((ratio) ** 1.4))
+    elif ratio > 0.5:
+        lux = (0.0224 * ch0) - (0.031 * ch1)
+    else:
+        lux = (0.0128 * ch0) - (0.0153 * ch1)
+    lux = lux / timing[0]
+
+    # Zeige ein lachendes oder weinendes Smiley basierend auf der Lichtintensität an
+    if lux > 800:
+        display.clear()
+        display.set_pixel(1, 2, 1)
+        display.set_pixel(6, 2, 1)
+        display.set_pixel(2, 3, 1)
+        display.set_pixel(5, 3, 1)
+        display.set_pixel(2, 4, 1)
+        display.set_pixel(5, 4, 1)
+        display.set_pixel(2, 5, 1)
+        display.set_pixel(3, 5, 1)
+        display.set_pixel(4, 5, 1)
+        display.write_display()
+    else:
+        display.clear()
+        display.set_pixel(2, 2, 1)
+

@@ -7,6 +7,7 @@ import datetime
 import dht11
 import os
 import smbus
+import ntplib
 import time
 from adafruit_ht16k33.segments import Seg7x4
 from luma.core.interface.serial import spi, noop
@@ -23,25 +24,35 @@ ONE_TIME_HIGH_RES_MODE_1 = 0x20  # Start measurement at 1 Lux
 # Festlegung der Klasse Lichtsensor
 class LightSensor():
     # Funktion zum ansprechen des Lichtsensors
-    def read_light_sensor(self):
+    @staticmethod
+    def read_light_sensor():
         # auslesen der Daten und transferierung in data variable
         data = bus.read_i2c_block_data(DEVICE, ONE_TIME_HIGH_RES_MODE_1)
         # auslesen der Daten in ein Array um das Lichtlevel zu definieren
         light_level = ((data[1] + (256 * data[0])) / 1.2)
         # Rückgabe der Lichtleveldaten
-        return light_level  # Funktion zum Festlegen und Abfragen von Daten zur aktuellen Tageszeit
+        return light_level
 
-    def setDayLightOffset(self):
+    @staticmethod
+    def setDayLightOffset():
         # setzen der offset Flag auf false
         offset = False
         # Setzen der Tageszeit und der aktuellen Tageszeit
-        dt = datetime.datetime.now()
+        dt = datetime.datetime.now().time()
 
         # Abfragen, ob die aktuelle Tageszeit vor 6 uhr morgens und 18 Uhr abends liegt
-        if (dt.time() <= datetime.time(6) and dt.time() >= datetime.time(18)):
+        if datetime.time(6) <= dt <= datetime.time(18):
             # setzen des offsets auf wahr
-            offset = True  # nach dämmerung und abends rückgabe des offstes
+            offset = True
+        # nach dämmerung und abends rückgabe des offstes
         return offset
+
+    @staticmethod
+    def getTime():
+        ntp_client = ntplib.NTPClient()
+        response = ntp_client.request('10.254.5.115')
+        currenttime = datetime.datetime.fromtimestamp(response.tx_time)
+        return currenttime
 
 
 # Initialisierung des Moduls MAX7219CWG Matrix 8x8
@@ -63,7 +74,6 @@ def main():
     instance = dht11.DHT11(pin=4)
     # Lichtsensor wird festgelegt
     sensor = LightSensor()
-    # endlosschleife solange das script läuft
     # Überprüfen, ob die CSV-Datei bereits existiert
     file_exists = os.path.isfile("sensor_data.csv")
 
@@ -71,23 +81,23 @@ def main():
         # das resultat der der daten wird im resultat abgelegt
         result = instance.read()
         # es wird abgefragt ob die ausgelesenen daten valide sind
-        if (result.is_valid()):
+        if result.is_valid():
             # schreiben der ausgelesenen temperaturwerte in die temp variable
-            temp = [int(x) for x in str(round(result.temperature))]
+            temp = str(round(result.temperature))
             # schreiben der ausgelesenen feuchtigkeitswerte in die humid variable
-            humid = [int(x) for x in str(round(result.humidity))]
+            humid = str(round(result.humidity))
             # livedatenanzeige im 7 segment display
-            segment[0] = str(temp[0])
-            segment[1] = str(temp[1])
+            segment[0] = temp[0]
+            segment[1] = temp[1]
             # schreibt die Zahl auf den jeweiligen Slot
-            segment[2] = str(humid[0])
-            segment[3] = str(humid[1])
+            segment[2] = humid[0]
+            segment[3] = humid[1]
             # aktualisiert die daten auf dem led
-            lcd.message = f"Temp: {str(temp[0]) + str(temp[1])} C\nHumidity: {str(humid[0]) + str(humid[1])}%"
+            lcd.message = f"Temp: {temp} C\nHumidity: {humid}%"
         # der sensor des lichtlevels wird ausgelesen
         light_level = sensor.read_light_sensor()
         # ist es tageszeit, so wird kein licht zugeführt
-        if (sensor.setDayLightOffset()):
+        if sensor.setDayLightOffset():
             print("Licht ausgeschaltet")
         # ansonsten wird das licht eingeschaltet
         else:
@@ -103,8 +113,12 @@ def main():
                 writer.writeheader()
 
             # Schreiben der Sensordaten in die Datei
-            writer.writerow({"timestamp": datetime.datetime.now(), "temperature": str(temp[0]) + str(temp[1]),
-                             "humidity": str(humid[0]) + str(humid[1]), "light_level": light_level})
+            writer.writerow({
+                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "temperature": temp,
+                "humidity": humid,
+                "light_level": light_level
+            })
 
         # ist das lichlevel unter 15000 lux so soll die lichtstärke mit dem symbol + angehoben werden
         if light_level < 15000:
